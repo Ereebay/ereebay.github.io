@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="CS330 lecture 1&amp;amp;2 notes Informal Problem Definitions  The multi-task learning problem: Learn all of the tasks more quickly or more proficiently than learning them independently.(更快更专业学习所有任务) The m">
+<meta name="keywords" content="meta learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS330 lecture 1&amp;2 学习笔记【未完】">
+<meta property="og:url" content="https://ereebay.me/posts/28331/index.html">
+<meta property="og:site_name" content="Eree&#39;s Blog">
+<meta property="og:description" content="CS330 lecture 1&amp;amp;2 notes Informal Problem Definitions  The multi-task learning problem: Learn all of the tasks more quickly or more proficiently than learning them independently.(更快更专业学习所有任务) The m">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-1.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-2.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-3.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-4.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-5.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-6.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/cs330-1-7.png">
+<meta property="og:updated_time" content="2020-03-03T14:14:20.352Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CS330 lecture 1&amp;2 学习笔记【未完】">
+<meta name="twitter:description" content="CS330 lecture 1&amp;amp;2 notes Informal Problem Definitions  The multi-task learning problem: Learn all of the tasks more quickly or more proficiently than learning them independently.(更快更专业学习所有任务) The m">
+<meta name="twitter:image" content="http://cdn.ereebay.me/hexo/cs330-1-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Eree's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://ereebay.me/posts/28331/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>CS330 lecture 1&2 学习笔记【未完】 | Eree's Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c609ce8cb0*******f*********eae0c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eree's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-english">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/en.html" rel="section"><i class="menu-item-icon fa fa-fw fa-flag"></i> <br>English</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></span>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ereebay.me/posts/28331/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Eree">
+      <meta itemprop="description" content="This is Eree's blog">
+      <meta itemprop="image" content="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eree's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">CS330 lecture 1&2 学习笔记【未完】
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-01-10 11:31:05" itemprop="dateCreated datePublished" datetime="2020-01-10T11:31:05+08:00">2020-01-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                <time title="修改时间：2020-03-03 22:14:20" itemprop="dateModified" datetime="2020-03-03T22:14:20+08:00">2020-03-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/notes/" itemprop="url" rel="index"><span itemprop="name">notes</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                <span title="本文字数">3.9k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                <span title="阅读时长">4 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+      <div>
+           <ul class="post-copyright">
+  <li class="post-copyright-link">
+    <strong><i class="fa fa-globe"></i> English：</strong>
+    <span id="url" style="display:none">https://eree.dev</span> 
+    <span id="path" style="display:none">https://ereebay.me/posts/28331/</span> 
+    <span id="info" style="display:none">英文版本</span> 
+    <span id="goto"></span> 
+  </li>
+</ul>
+
+
+<script language="javascript">
+    var url = document.getElementById("url").innerHTML;
+    var path = document.getElementById("path").innerHTML;
+    var info = document.getElementById("info").innerHTML;
+    path=GetUrlRelativePath(path);
+    if(info.length==0){
+      infos= url+path;
+    }
+    else{
+      infos=info;
+    }
+    var str = "<a href='"+url+path+"'>"+infos+"</a>"
+    console.log(str);
+    document.getElementById("goto").innerHTML=str;
+
+　　function GetUrlRelativePath()
+　　{
+　　　　var url = document.location.toString();
+　　　　var arrUrl = url.split("//");
+
+　　　　var start = arrUrl[1].indexOf("/");
+　　　　var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+　　　　if(relUrl.indexOf("?") != -1){
+　　　　　　relUrl = relUrl.split("?")[0];
+　　　　}
+　　　　return relUrl;
+　　}
+</script>
+
+           <br>
+      </div>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="cs330-lecture-12-notes">CS330 lecture 1&amp;2 notes</h1>
+<h2 id="informal-problem-definitions">Informal Problem Definitions</h2>
+<ul>
+<li>The multi-task learning problem: Learn all of the tasks more quickly or more proficiently than learning them independently.(更快更专业学习所有任务)</li>
+<li>The meta-learning problem: Given data/experience on previous tasks, learn a new task more quickly and/or more proficiently.（依照先前任务的经验，更快更好的学习新任务）</li>
+</ul>
+<a id="more"></a>
+<h2 id="multi-task-learning-basics">Multi-Task Learning Basics</h2>
+<p>传统单任务学习 Single-task learning:</p>
+<p><span class="math display">\[
+\begin{array}{l}{\mathscr{D}=\left\{(\mathbf{x}, \mathbf{y})_{k}\right\}} \\ {\min _{\theta} \mathscr{L}(\theta, \mathscr{D})}\end{array}
+\]</span></p>
+<p>损失函数 Typical loss: negative log likelihood</p>
+<p><span class="math display">\[
+\mathscr{L}(\theta, \mathscr{D})=-\mathbb{E}_{(x, y) \sim \mathscr{D}}\left[\log f_{\theta}(\mathbf{y} | \mathbf{x})\right]
+\]</span></p>
+<h3 id="whats-a-task">What’s a task?</h3>
+<p>A task: <span class="math inline">\(\mathscr{T}_{i} \triangleq\left\{p_{i}(\mathbf{x}), p_{i}(\mathbf{y} | \mathbf{x}), \mathscr{L}_{i}\right\}\)</span></p>
+<p>data generating distributions</p>
+<p>这里将任务定义成，数据样本的分布，数据标签的分布和损失函数</p>
+<p>Corresponding datsets:<span class="math inline">\(\mathscr{D}_{i}^{tr}\)</span> 训练集<span class="math inline">\(\mathscr{D}_{i}^{t s t}\)</span>测试集 通常用<span class="math inline">\(\mathscr{D}_{i}\)</span>表示训练集</p>
+<p>Multi-task classification：<span class="math inline">\(\mathscr{L}_{i}\)</span> same across all tasks 例如：每种语言的手写识别中，损失函数的形式可能相同</p>
+<p>Multi-label learning:<span class="math inline">\(\mathscr{L}_{i}, {p}_{i}(x)\)</span> same across all tasks 例如：CelebA 多标签识别任务中，样本和损失函数都是相同的</p>
+<p>在以下任务中损失函数可能会发生不同的变化：</p>
+<ul>
+<li>mixed discrete， continuous labels across tasks（混了了离散和连续的标签的任务）</li>
+<li>care more about one task than another（任务之间权重不同？）</li>
+</ul>
+<h3 id="conditioning-on-the-task">Conditioning on the task</h3>
+<p>对于multi task learning的问题需要引入一个task descriptor作为描述任务的变量，那么如何设计这个变量。</p>
+<p>假设<span class="math inline">\({z}_{i}\)</span>是task index，那么最直接的办法就是multiplicative gating，也就使得这个多任务学习中的每个任务是独立的用单独网络训练而不分享参数。</p>
+<p>那么另一种极端就是直接concat<span class="math inline">\(z_i\)</span>,那样所有参数都会被共享，除了输入<span class="math inline">\(z_i\)</span>之后的参数。</p>
+<p>那么另一种思路就是吧<span class="math inline">\(\theta\)</span>分为shared parameters <span class="math inline">\(\theta^{sh}\)</span>和task-specific parametes <span class="math inline">\(\theta^i\)</span>也就是共享参数和不共享参数</p>
+<p>那么优化目标就变成了</p>
+<p><span class="math display">\[
+\min _{\theta^{s h}, \theta^{1}, \ldots, \theta^{T}} \sum_{i=1}^{T} \mathscr{L}_{i}\left(\left\{\theta^{s h}, \theta^{i}\right\}, \mathscr{D}_{i}\right)
+\]</span></p>
+<p>问题就转化成了如何选择和什么时候共享参数</p>
+<h4 id="common-choices">Common Choices</h4>
+<p>常用的方法主要有拼接和加法，看图一目了然 1. Concatenation-based conditioning（拼接)</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/cs330-1-1.png" alt="cs330-1-1.png"><figcaption>cs330-1-1.png</figcaption>
+</figure>
+<ol start="2" type="1">
+<li>Additive conditioning（加法）</li>
+</ol>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/cs330-1-2.png" alt="cs330-1-2.png"><figcaption>cs330-1-2.png</figcaption>
+</figure>
+<p>实际上两者是等同的</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/cs330-1-3.png" alt="cs330-1-3.png"><figcaption>cs330-1-3.png</figcaption>
+</figure>
+<ol start="3" type="1">
+<li>Multi-head architecture</li>
+</ol>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/cs330-1-4.png" alt="cs330-1-4.png"><figcaption>cs330-1-4.png</figcaption>
+</figure>
+<ol start="4" type="1">
+<li>Multiplicative conditioning</li>
+</ol>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/cs330-1-5.png" alt="cs330-1-5.png"><figcaption>cs330-1-5.png</figcaption>
+</figure>
+<p>乘法的方法可以带来 - 更强的表达能力 - 对于回归任务，有multiplication gating - 能够对于独立的网络和heads进行更好的泛化</p>
+<h4 id="complex-choices">Complex Choices</h4>
+<p>还有许多其他复杂的方式</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/cs330-1-6.png" alt="cs330-1-6.png"><figcaption>cs330-1-6.png</figcaption>
+</figure>
+<p>但是设计的灵感来源问题就和神经网络的参数选择一样： - 不同问题之间是独立的 - 对于特定的问题，主要依靠设计者的直觉和背景知识 - 目前解决的方法更像是艺术而非科学</p>
+<h3 id="optimizing-the-objective">Optimizing the objective</h3>
+<p>Objective:<span class="math inline">\(\min _{\theta} \sum_{i=1}^{T} \mathscr{L}_{i}\left(\theta, \mathscr{D}_{i}\right)\)</span></p>
+<p>一般的流程：</p>
+<ol type="1">
+<li>从tasks中采样一个minibatch<span class="math inline">\(\mathscr{B} \sim\left\{\mathscr{T}_{i}\right\}\)</span></li>
+<li>从每个task中采样一个minibatch的数据样本<span class="math inline">\(\mathscr{D}_{i}^{b} \sim \mathscr{D}_{i}\)</span></li>
+<li>在每个minibatch-task上计算loss：<span class="math inline">\(\hat{\mathscr{L}}(\theta, \mathscr{B})=\sum_{\mathcal{T}_{k} \in \mathscr{B}} \mathscr{L}_{k}\left(\theta, \mathscr{D}_{k}^{b}\right)\)</span></li>
+<li>反向传播计算梯度<span class="math inline">\(\nabla_{\theta} \hat{\mathscr{L}}\)</span></li>
+<li>采用你喜欢的优化器更新梯度</li>
+</ol>
+<p>Note：这样可以保证无论数据量如何，任务都可以被均匀采样 Tip:对于回归任务，确保任务标签是相同的scale</p>
+<h3 id="challenge">Challenge</h3>
+<ol type="1">
+<li>Negative transfer</li>
+</ol>
+<p>在cifar-100上进行多任务训练，不如独立训练。</p>
+<p>可能的原因： - 来自优化方面的挑战 - 不同任务之间的相互干扰 - 不同任务的学习速率不同 - 受限的表达能力 - 多任务网络体积较大</p>
+<p>解决方法：</p>
+<p>share less across task（软参数分享） - allows for more luid degrees of parameter sharing 好处 - yet another set of design decisions/hyperparameters 坏处</p>
+<p><span class="math display">\[
+\min _{\theta^{sh}, \theta^{1}, \ldots, \theta^{T}} \sum_{i=1}^{T} \mathscr{L}_{i}\left(\left\{\theta^{s h}, \theta^{i}\right\}, \mathscr{D}_{i}\right)+\sum_{t=1}^{T}\left\|\theta^{t}-\theta^{t&#39;}\right\|
+\]</span></p>
+<p>后面的部分就是软参数分享，就是将第二个task的参数和前一个的差作为优化项，相当于让每个task的参数尽可能相似，也就是分享了参数。</p>
+<ol start="2" type="1">
+<li>Overfitting</li>
+</ol>
+<p>过拟合原因一般是由于，参数共享的不够多，解决方案就是参数分享的更多一些。可以理解为，分享的不够，使得每个task都过拟合了，类似于独立训练了。</p>
+<h2 id="meta-learning-basics">Meta-Learning Basics</h2>
+<p>元学习的两种视角 - Mechanistic view （机制视角） - 可以读取整个数据集并且对新的数据进行预测的深度神经网络 - 利用元数据集对网络进行训练，并且这种元数据集针对不同的任务包含了不同的数据集 - 这种视角可以容易实现一个元学习算法。 - Probabilistic view（概率视角） - 从一系列元学习任务重提取先验知识 - 使用少量的数据和先验信息推测出相对有效的后验参数 - 这种视角可以更好地理解元学习算法</p>
+<h3 id="problem-definitions">Problem definitions</h3>
+<p>首先回顾一下监督学习： <img src="http://cdn.ereebay.me/hexo/cs330-1-7.png" alt="cs330-1-7.png"></p>
+<p>存在的问题： - 需要大量的标记数据 - 目前的某些任务数据标签很有限</p>
+<p>To be continued</p>
+
+      
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------The end of this article&nbsp;<i class="fa fa-paw"></i>&nbsp;Thank you for your reading-------</div>
+    
+</div>
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+
+    
+
+    
+       
+    
+    
+
+    
+      <div>
+        
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Eree</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://ereebay.me/posts/28331/" title="CS330 lecture 1&2 学习笔记【未完】">https://ereebay.me/posts/28331/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/meta-learning/" rel="tag"><i class="fa fa-tag"></i> meta learning</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/19897/" rel="next" title="A Meta-Transfer Objective for Learning to Disentangle Causal Mechanisms 论文笔记【未完】">
+                <i class="fa fa-chevron-left"></i> A Meta-Transfer Objective for Learning to Disentangle Causal Mechanisms 论文笔记【未完】
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/35664/" rel="prev" title="Federated Meta-Learning with Fast Convergence and Efficient Communication">
+                Federated Meta-Learning with Fast Convergence and Efficient Communication <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200" alt="Eree">
+            
+              <p class="site-author-name" itemprop="name">Eree</p>
+              <p class="site-description motion-element" itemprop="description">This is Eree's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="GitHub &rarr; https://github.com/ereebay"><i class="fa fa-fw fa-github"></i>GitHub</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="bWFpbHRvOnhrLmphY2tzb25AaG90bWFpbC5jb20=" title="E-Mail &rarr; mailto:xk.jackson@hotmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9lcmVlX2JheQ==" title="Twitter &rarr; https://twitter.com/eree_bay"><i class="fa fa-fw fa-twitter"></i>Twitter</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9zdGVhbWNvbW11bml0eS5jb20vaWQvRXJlZUJheQ==" title="Steam &rarr; https://steamcommunity.com/id/EreeBay"><i class="fa fa-fw fa-steam"></i>Steam</span>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+                
+              
+              
+              
+              <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+             </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWN6cC5jb20=" title="https://hiczp.com">czp's blog</span>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWFyaWFzLmNvbQ==" title="https://hiarias.com">arias's blog</span>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#cs330-lecture-12-notes"><span class="nav-number">1.</span> <span class="nav-text">CS330 lecture 1&amp;2 notes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#informal-problem-definitions"><span class="nav-number">1.1.</span> <span class="nav-text">Informal Problem Definitions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multi-task-learning-basics"><span class="nav-number">1.2.</span> <span class="nav-text">Multi-Task Learning Basics</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#whats-a-task"><span class="nav-number">1.2.1.</span> <span class="nav-text">What’s a task?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conditioning-on-the-task"><span class="nav-number">1.2.2.</span> <span class="nav-text">Conditioning on the task</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#common-choices"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">Common Choices</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#complex-choices"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">Complex Choices</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#optimizing-the-objective"><span class="nav-number">1.2.3.</span> <span class="nav-text">Optimizing the objective</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#challenge"><span class="nav-number">1.2.4.</span> <span class="nav-text">Challenge</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#meta-learning-basics"><span class="nav-number">1.3.</span> <span class="nav-text">Meta-Learning Basics</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#problem-definitions"><span class="nav-number">1.3.1.</span> <span class="nav-text">Problem definitions</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Eree</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">47k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">42 分钟</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Pisces</span> v6.5.0</div>
+
+
+
+
+
+
+
+
+  <span class="exturl" data-url="aHR0cDovL3d3dy5taWl0YmVpYW4uZ292LmNu">浙ICP备15027223号</span>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'e8f2fc8efe4d0c2fb068',
+          clientSecret: 'e93849838f07bf7fea34ed1ae217fff4d70c07a8',
+          repo: 'blog',
+          owner: 'Ereebay',
+          admin: ['Ereebay'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=6.5.0"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=6.5.0"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=6.5.0"></script>
+
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+
+</body>
+</html>

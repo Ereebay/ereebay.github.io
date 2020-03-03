@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Stagewise Knowledge Distillation Abstract 大部分现代深度学习模型需要高运算力，但是对于嵌入式设备来说，缺少这种高运算能力。因此对于这类设备，能够减少运算并且保持性能的模型非常重要。知识蒸馏就是解决这类问题的方法之一。传统知识蒸馏方法是直接在一个阶段中将知识从老师中转换到学生。我们提出一种阶段性的训练方式，来提升知识的转换。这种方法甚至可以只用一部分训练教师">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Stagewise Knowledge Distillation">
+<meta property="og:url" content="https://ereebay.me/posts/26959/index.html">
+<meta property="og:site_name" content="Eree&#39;s Blog">
+<meta property="og:description" content="Stagewise Knowledge Distillation Abstract 大部分现代深度学习模型需要高运算力，但是对于嵌入式设备来说，缺少这种高运算能力。因此对于这类设备，能够减少运算并且保持性能的模型非常重要。知识蒸馏就是解决这类问题的方法之一。传统知识蒸馏方法是直接在一个阶段中将知识从老师中转换到学生。我们提出一种阶段性的训练方式，来提升知识的转换。这种方法甚至可以只用一部分训练教师">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-03-03T14:08:23.096Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Stagewise Knowledge Distillation">
+<meta name="twitter:description" content="Stagewise Knowledge Distillation Abstract 大部分现代深度学习模型需要高运算力，但是对于嵌入式设备来说，缺少这种高运算能力。因此对于这类设备，能够减少运算并且保持性能的模型非常重要。知识蒸馏就是解决这类问题的方法之一。传统知识蒸馏方法是直接在一个阶段中将知识从老师中转换到学生。我们提出一种阶段性的训练方式，来提升知识的转换。这种方法甚至可以只用一部分训练教师">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Eree's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://ereebay.me/posts/26959/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Stagewise Knowledge Distillation | Eree's Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c609ce8cb0*******f*********eae0c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eree's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-english">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/en.html" rel="section"><i class="menu-item-icon fa fa-fw fa-flag"></i> <br>English</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></span>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ereebay.me/posts/26959/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Eree">
+      <meta itemprop="description" content="This is Eree's blog">
+      <meta itemprop="image" content="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eree's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Stagewise Knowledge Distillation
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-17 13:15:34" itemprop="dateCreated datePublished" datetime="2020-02-17T13:15:34+08:00">2020-02-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                <time title="修改时间：2020-03-03 22:08:23" itemprop="dateModified" datetime="2020-03-03T22:08:23+08:00">2020-03-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/notes/" itemprop="url" rel="index"><span itemprop="name">notes</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                <span title="本文字数">4.1k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                <span title="阅读时长">4 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+      <div>
+           <ul class="post-copyright">
+  <li class="post-copyright-link">
+    <strong><i class="fa fa-globe"></i> English：</strong>
+    <span id="url" style="display:none">https://eree.dev</span> 
+    <span id="path" style="display:none">https://ereebay.me/posts/26959/</span> 
+    <span id="info" style="display:none">英文版本</span> 
+    <span id="goto"></span> 
+  </li>
+</ul>
+
+
+<script language="javascript">
+    var url = document.getElementById("url").innerHTML;
+    var path = document.getElementById("path").innerHTML;
+    var info = document.getElementById("info").innerHTML;
+    path=GetUrlRelativePath(path);
+    if(info.length==0){
+      infos= url+path;
+    }
+    else{
+      infos=info;
+    }
+    var str = "<a href='"+url+path+"'>"+infos+"</a>"
+    console.log(str);
+    document.getElementById("goto").innerHTML=str;
+
+　　function GetUrlRelativePath()
+　　{
+　　　　var url = document.location.toString();
+　　　　var arrUrl = url.split("//");
+
+　　　　var start = arrUrl[1].indexOf("/");
+　　　　var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+　　　　if(relUrl.indexOf("?") != -1){
+　　　　　　relUrl = relUrl.split("?")[0];
+　　　　}
+　　　　return relUrl;
+　　}
+</script>
+
+           <br>
+      </div>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="stagewise-knowledge-distillation">Stagewise Knowledge Distillation</h1>
+<h2 id="abstract">Abstract</h2>
+<p>大部分现代深度学习模型需要高运算力，但是对于嵌入式设备来说，缺少这种高运算能力。因此对于这类设备，能够减少运算并且保持性能的模型非常重要。知识蒸馏就是解决这类问题的方法之一。传统知识蒸馏方法是直接在一个阶段中将知识从老师中转换到学生。我们提出一种阶段性的训练方式，来提升知识的转换。这种方法甚至可以只用一部分训练教师模型的数据，并且不影响效果。这种方法可以补充其他模型压缩技术，甚至可以看做是通用的模型压缩技术。</p>
+<a id="more"></a>
+<h2 id="introduction">Introduction</h2>
+<p>本文主要是在知识蒸馏上的模型压缩技术。因此先介绍一下模型压缩的分类。</p>
+<p>模型压缩主要可以分为以下五类：</p>
+<ol type="1">
+<li>Parameter Pruning and Sharing 参数修剪和共享：主要是为了减少网络参数中的冗余并且消除不必要的参数。</li>
+<li>Low Rank Factorization techniques 低秩分解技术：主要是使用张量/矩阵分解来确定网络的有效参数。</li>
+<li>Transferred/Compact Convolutional Filters 转换卷积过滤器：旨在使用专门设计的卷积过滤器以减少计算和存储空间。</li>
+<li>knowledge Distillation 知识蒸馏： 旨在利用一个更大的与训练模型教师训练出一个小模型学生。</li>
+<li>Quantization 量化：旨在减少每个权重的位数，同时保留网络性能。</li>
+</ol>
+<p>在这项工作中，主要专注于知识蒸馏的方法。理想情况下，教师应该能够将其所学的知识全部传授给学生，但是并非如此。此外老师所有的知识并不一定和学生有关，最理想的情况是，学生学习重要的环节，而忽略不重要的环节。本文主要采用resnet34作为教师模型，学生模型也采用类似resnet的模型，但是在存储结构和计算复杂度上要小得多。本文介绍了使用预训练的教师模型的多个特征图训练学生的方法。</p>
+<p>本文主要采用一种新的方式进行训练，采用固定在某个层的教师模型的特征图对学生模型进行训练。针对每个特征图，以阶段的方式对学生模型进行训练，并且直接在数据集上训练最终的分类层，而无需老师。最终证明了，这种方法可以直接在teacher的一部分训练数据上学习。</p>
+<h2 id="related-work">Related Work</h2>
+<h2 id="methodology">Methodology</h2>
+<p>本文主要采用的resnet网络，关于resnet的具体结构不赘述了主要就是：</p>
+<ul>
+<li>Basic Block</li>
+<li>Downsample Block</li>
+<li>ResNet18 or 34 type models</li>
+</ul>
+<h3 id="teacher-network">Teacher Network</h3>
+<p>本文采用res34作为教师模型</p>
+<h3 id="student-network">Student Network</h3>
+<p>采用缩减版的res34作为学生模型，主要是减少basic block数量。</p>
+<h3 id="dataset">Dataset</h3>
+<p>数据集采用了三个：Imagenette Imagewoof 和 CIFAR10。前两个数据集是Imagenet的子数据集。第一个相对简单一些，后者相对难一点。本项工作的目的不是为了尽可能提升准确率，而是为了能够使得学生的准确率尽可能接近老师。</p>
+<h3 id="proposed-training-method">Proposed Training Method</h3>
+<p>在实验早期阶段中，我们训练多个学生模型的特征图以同时模仿教师模型中对应的特征图和标签。所以每对特征图的均方差误差将会被累计。此外，还会累计上交叉熵损失函数。因此总损失函数可以表示为：</p>
+<p><span class="math display">\[
+\begin{aligned} L\left(y, \hat{y}, y_{c l s}, \mathrm{class}\right) &amp;=\frac{1}{M N} \sum_{i=1}^{N} \sum_{j=1}^{M}(y(i, j)-\hat{y}(i, j))^{2} \\ &amp;+\frac{1}{M C} \sum_{j=1}^{M} \sum_{k=1}^{C}\left\{-\log \left(\frac{\exp \left(y_{c l s}(j, \text { class })\right)}{\sum_{k=1}^{C} \exp \left(y_{c l s}(j, k)\right)}\right)\right\} \end{aligned}
+\]</span></p>
+<p>N表示的是blocks的数量，y(i,j)是teacher模型，第i个block对应第j个输入的中间输出。同理yhat就是学生模型的。M是batchsize。ycls(j,k)是模型第k个类，第j个输入所对应的输出，C是类别的数量，而且类是每个特定输入所代表的正确的类。</p>
+<p>这些早期实验表明了，在有和没有teacher模型的情况下训练的学生模型之间的非常小的提升。这些可以归因于多个特征图和标签必须同时被模仿，即优化算法的条件非常严格。给每个MSE损失和交叉熵损失分配权重也无济于事，因为训练过程仍然很严格。另一个原因可能是梯度消失和累计。为了减少这种训练的严格性，提出了分阶段训练方式。</p>
+<p>我们对于学生模型采用分阶段的方式训练，也就是一个block一次。图像既是教师也是学生模型的输入，并且从两个模型中取出第一个块的输出。在输出之间采用mse误差，然后对学生模型进行反向传播。在训练第一个block 100个epoch之后，停止训练。在下一个步骤，再将输入传到teacher和学生，但取出第二个块的特征，然后按照和第一个阶段相同的步骤进行操作，即第二个块的输出之间的mse损失。然后反向传播100个epoch。对于所有的blocks都重复这个操作。在学生模型的末端，对分类器部分进行直接训练以从数据集中预测类别，即将图像传递到学生模型，并使用交叉熵损失对其进行训练以进行类别预测。在这个阶段，在此阶段，不使用教师模型，而学生模型的其余部分（除分类器部分之外的其他模型）都被冻结。使用图二可以很好理解这一点，第i阶段的训练损失函数可以表示为：</p>
+<p><span class="math display">\[
+L_{i}(y, \hat{y})=\frac{1}{M} \sum_{j=1}^{M}(y(i, j)-\hat{y}(i, j))^{2}
+\]</span></p>
+<p>分类器采用标准的交叉熵损失：</p>
+<p><span class="math display">\[
+L_{c l s}\left(y_{c l s}, \mathrm{class}\right)=\frac{1}{M C} \sum_{j=1}^{M} \sum_{k=1}^{C}\left\{-\log \left(\frac{\exp \left(y_{c l s}(j, \mathrm{class})\right)}{\sum_{k=1}^{C} \exp \left(y_{c l s}(j, k)\right)}\right)\right\}
+\]</span></p>
+<p>我们证明了阶段式训练有其自身的优点，主要优点是每次需要优化的参数数量有限。与上一次训练更多数量的参数相比，这种数量有限的参数可以是的训练时的严格程度放款。结果表明，阶段训练比一次性训练效果更好。</p>
+<h4 id="less-data-apporach">Less Data Apporach</h4>
+<p>像ImageNet这样的数据集是如此之大，以至于在优先的硬件上使用教师模型对学生模型进行分阶段训练将花费大量时间。因此，如果我们仅使用数据的一个子集执行分阶段训练，同时又能保持准确性，就变得很有用。因此，使用原始训练数据的1/4重复进行阶段式训练实验，注意原始训练数据是指在这些数据上训练教师模型的数据，剩余的3/4数据保留为测试集作为评估。</p>
+<h2 id="results">Results</h2>
+<p>图3和图4给出了同时训练，阶段训练，和部分数据的阶段训练的结果。</p>
+<p>这些图表明，具有整个数据集的student模型几乎达到了和老师相同的准确性。但是在数据较少的情况下，在有老师和没有老师的情况下进行训练时，准确性存在巨大差距。以下各段讨论了这些结果背后的可能原因。应当指出，模型压缩的目的是减小教师和学生之间的差异，而不是得到更好的准确率。显然，如果使用更好的老师，学生的准确性将会提高，有时候，学生的准确性甚至超过了教师模型的准确性。</p>
+<p>实验结果可以这样解释。由于teacher已经学习了完整的数据集，因此它已经学习到了用于对整个数据集进行分类的必要特征。当使用该teacher对student进行训练时候，即使使用小数据集来训练，也会将其“知识”传授给学生。使用较少的数据也可以通过在单个阶段训练中的必须的参数数量来证明。由于使用所提出的方法一次只训练一小部分网络，因此需要优化的参数数量比前面段落中提到的完整的网络少的多。结果表明，这种方法大大提高了准确性，在没有老师的情况下，在小型数据集上训练的学生网络的准确性要比使用提出的方法在同一数据集上训练的学生低得多。当然，主要优点是减少训练时间，这非常重要，因为在没有teacher的情况下，分阶段训练将花费N+1倍的时间进行训练。（因为每个阶段都单独训练了相同的epoch）。在这里n代表的是阶段。</p>
+<p>图4显示了使用较少数据量的实验结果，可以看出，使用较少的数据量并且独立训练，学生的表现非常差。另一方面，如果较少的数据的教师模型来逐步训练学生，则预测的准确性会大大提高。这种能力应用于非常大的数据集将会非常有用。</p>
+<p>同时训练的结果和没有老师的训练结果几乎接近。特别是，对于imagenet的两个子数据集，同时训练的结果略胜一筹，但是对于cifar10则略差。这重新证明了同步训练的条件过于严苛，而且对比没有teacher的训练情况下并没有明显优势。但是阶段训练的结果要比同时训练和没有teacher训练的结果都要好的多。由于在完整数据集上同时进行训练的结果并不乐观，因此在较少数据集上就不进行了。</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>这项工作提出了一种新颖的方法将知识从一个网络转移到另一个网络。由于减少了在一个阶段优化的参数数量，因此与一次直接使用完整网络进行知识传输相比，该方法效果更好。这也使得学生网络的训练数据量可以少于教师。在类似于Imagenet这样的较大数据集训练时，将会非常有用。</p>
+<p>此外，该方法非常灵活并且可以和其他模型压缩技术以及其他的模型一起使用。同时它也不局限于图像分类，还可以用于诸如对象检测图像分割等应用。可以看做是一种通用的压缩技术。</p>
+
+      
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------The end of this article&nbsp;<i class="fa fa-paw"></i>&nbsp;Thank you for your reading-------</div>
+    
+</div>
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+
+    
+
+    
+       
+    
+    
+
+    
+      <div>
+        
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Eree</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://ereebay.me/posts/26959/" title="Stagewise Knowledge Distillation">https://ereebay.me/posts/26959/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/35664/" rel="next" title="Federated Meta-Learning with Fast Convergence and Efficient Communication">
+                <i class="fa fa-chevron-left"></i> Federated Meta-Learning with Fast Convergence and Efficient Communication
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/51469/" rel="prev" title="Decoupled Neural Interfaces using Synthetic Gradients">
+                Decoupled Neural Interfaces using Synthetic Gradients <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200" alt="Eree">
+            
+              <p class="site-author-name" itemprop="name">Eree</p>
+              <p class="site-description motion-element" itemprop="description">This is Eree's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="GitHub &rarr; https://github.com/ereebay"><i class="fa fa-fw fa-github"></i>GitHub</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="bWFpbHRvOnhrLmphY2tzb25AaG90bWFpbC5jb20=" title="E-Mail &rarr; mailto:xk.jackson@hotmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9lcmVlX2JheQ==" title="Twitter &rarr; https://twitter.com/eree_bay"><i class="fa fa-fw fa-twitter"></i>Twitter</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9zdGVhbWNvbW11bml0eS5jb20vaWQvRXJlZUJheQ==" title="Steam &rarr; https://steamcommunity.com/id/EreeBay"><i class="fa fa-fw fa-steam"></i>Steam</span>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+                
+              
+              
+              
+              <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+             </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWN6cC5jb20=" title="https://hiczp.com">czp's blog</span>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWFyaWFzLmNvbQ==" title="https://hiarias.com">arias's blog</span>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#stagewise-knowledge-distillation"><span class="nav-number">1.</span> <span class="nav-text">Stagewise Knowledge Distillation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#related-work"><span class="nav-number">1.3.</span> <span class="nav-text">Related Work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#methodology"><span class="nav-number">1.4.</span> <span class="nav-text">Methodology</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#teacher-network"><span class="nav-number">1.4.1.</span> <span class="nav-text">Teacher Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#student-network"><span class="nav-number">1.4.2.</span> <span class="nav-text">Student Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dataset"><span class="nav-number">1.4.3.</span> <span class="nav-text">Dataset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proposed-training-method"><span class="nav-number">1.4.4.</span> <span class="nav-text">Proposed Training Method</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#less-data-apporach"><span class="nav-number">1.4.4.1.</span> <span class="nav-text">Less Data Apporach</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#results"><span class="nav-number">1.5.</span> <span class="nav-text">Results</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">1.6.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Eree</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">47k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">42 分钟</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Pisces</span> v6.5.0</div>
+
+
+
+
+
+
+
+
+  <span class="exturl" data-url="aHR0cDovL3d3dy5taWl0YmVpYW4uZ292LmNu">浙ICP备15027223号</span>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'e8f2fc8efe4d0c2fb068',
+          clientSecret: 'e93849838f07bf7fea34ed1ae217fff4d70c07a8',
+          repo: 'blog',
+          owner: 'Ereebay',
+          admin: ['Ereebay'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=6.5.0"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=6.5.0"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=6.5.0"></script>
+
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+
+</body>
+</html>

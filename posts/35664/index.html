@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Federated Meta-Learning with Fast Convergence and Efficient Communication Abstract 本文提出了一个联邦元学习框架FedMeta，该结构共享参数化算法（meta learner）而不是以前的全局模型。本文在LEAF数据集和实际的数据集进行了评估，并且证明了FedMeta所需的通信成本降低了2.82-4.33倍，收敛速度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Federated Meta-Learning with Fast Convergence and Efficient Communication">
+<meta property="og:url" content="https://ereebay.me/posts/35664/index.html">
+<meta property="og:site_name" content="Eree&#39;s Blog">
+<meta property="og:description" content="Federated Meta-Learning with Fast Convergence and Efficient Communication Abstract 本文提出了一个联邦元学习框架FedMeta，该结构共享参数化算法（meta learner）而不是以前的全局模型。本文在LEAF数据集和实际的数据集进行了评估，并且证明了FedMeta所需的通信成本降低了2.82-4.33倍，收敛速度">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/20200218221422.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/20200219111333.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/20200219114337.png">
+<meta property="og:image" content="http://cdn.ereebay.me/hexo/20200219125820.png">
+<meta property="og:updated_time" content="2020-03-03T14:09:06.104Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Federated Meta-Learning with Fast Convergence and Efficient Communication">
+<meta name="twitter:description" content="Federated Meta-Learning with Fast Convergence and Efficient Communication Abstract 本文提出了一个联邦元学习框架FedMeta，该结构共享参数化算法（meta learner）而不是以前的全局模型。本文在LEAF数据集和实际的数据集进行了评估，并且证明了FedMeta所需的通信成本降低了2.82-4.33倍，收敛速度">
+<meta name="twitter:image" content="http://cdn.ereebay.me/hexo/20200218221422.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Eree's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://ereebay.me/posts/35664/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Federated Meta-Learning with Fast Convergence and Efficient Communication | Eree's Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c609ce8cb0*******f*********eae0c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eree's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-english">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/en.html" rel="section"><i class="menu-item-icon fa fa-fw fa-flag"></i> <br>English</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></span>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ereebay.me/posts/35664/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Eree">
+      <meta itemprop="description" content="This is Eree's blog">
+      <meta itemprop="image" content="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eree's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Federated Meta-Learning with Fast Convergence and Efficient Communication
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-05 18:36:17" itemprop="dateCreated datePublished" datetime="2020-02-05T18:36:17+08:00">2020-02-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                <time title="修改时间：2020-03-03 22:09:06" itemprop="dateModified" datetime="2020-03-03T22:09:06+08:00">2020-03-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/notes/" itemprop="url" rel="index"><span itemprop="name">notes</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                <span title="本文字数">5.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                <span title="阅读时长">5 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+      <div>
+           <ul class="post-copyright">
+  <li class="post-copyright-link">
+    <strong><i class="fa fa-globe"></i> English：</strong>
+    <span id="url" style="display:none">https://eree.dev</span> 
+    <span id="path" style="display:none">https://ereebay.me/posts/35664/</span> 
+    <span id="info" style="display:none">英文版本</span> 
+    <span id="goto"></span> 
+  </li>
+</ul>
+
+
+<script language="javascript">
+    var url = document.getElementById("url").innerHTML;
+    var path = document.getElementById("path").innerHTML;
+    var info = document.getElementById("info").innerHTML;
+    path=GetUrlRelativePath(path);
+    if(info.length==0){
+      infos= url+path;
+    }
+    else{
+      infos=info;
+    }
+    var str = "<a href='"+url+path+"'>"+infos+"</a>"
+    console.log(str);
+    document.getElementById("goto").innerHTML=str;
+
+　　function GetUrlRelativePath()
+　　{
+　　　　var url = document.location.toString();
+　　　　var arrUrl = url.split("//");
+
+　　　　var start = arrUrl[1].indexOf("/");
+　　　　var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+　　　　if(relUrl.indexOf("?") != -1){
+　　　　　　relUrl = relUrl.split("?")[0];
+　　　　}
+　　　　return relUrl;
+　　}
+</script>
+
+           <br>
+      </div>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="federated-meta-learning-with-fast-convergence-and-efficient-communication">Federated Meta-Learning with Fast Convergence and Efficient Communication</h1>
+<h2 id="abstract">Abstract</h2>
+<p>本文提出了一个联邦元学习框架FedMeta，该结构共享参数化算法（meta learner）而不是以前的全局模型。本文在LEAF数据集和实际的数据集进行了评估，并且证明了FedMeta所需的通信成本降低了2.82-4.33倍，收敛速度更快，与FedAVG相比甚至提高了3.23~14.84个百分比。此外FedMeta保留了用户隐私，因为仅仅分享了参数化算法而没有数据。</p>
+<a id="more"></a>
+<h2 id="introduction">Introduction</h2>
+<p>在联邦学习领域比较著名的FedAvg算法，可以灵活地使用SGD进行本地训练，在平衡计算和通信成本的情况下达到较高的精度。</p>
+<p>在元学习领域，像MAML这种基于初始化的元学习算法非常擅长对于新的task的快速收敛以及拥有良好的泛化性。这使得其非常适合于non IID且高度个性化的去中心化数据。</p>
+<p>受到这个启发，本文开发了一个与之前联合学习中工作大不相同的联合元学习框架。本文首先将元学习方法和联邦学习联系起来。在元学习中，通过元训练过程从大量的任务重缓慢学习参数化的算法（meta learner），在该过程中，算法会在每个task中快速训练一个特定的模型。</p>
+<p>task通常由support set和query set组成，彼此不想交。在support set上训练特定任务的模型，在query set上进行测试。然后利用测试结果更新算法。在联邦元学习中，算法（meta learner）在server端维护，并分发到clients进行模型的训练。元训练的每个episode过程中，被采样到的一个batch的clients会接受到算法（meta learner）的参数然后进行模型训练。然后将query set上的测试结果上传到server端更新 meta learner。整体流程如图所示：</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/20200218221422.png" alt="20200218221422.png"><figcaption>20200218221422.png</figcaption>
+</figure>
+<p><strong>Comparing federated meta-learning with federated learning</strong> FML和ML的比较。 联邦元学习类似于联邦学习，区别主要在于共享的不再是全局模型，而是算法参数（元模型参数）。但是，元学习在概念上和分布式模型训练不同，而且在共享元学习算法可以比共享模型更灵活应用。例如在图像分类中，n个类别的图像可能在clients之间不均匀地分布，其中每个client最多具有k个类别。对于联邦学习需要训练一个大型的n类分类器，以利用来自所有客户端的数据，然而其实k类分类器就足够了，因为他每次其实只为一个client做预测。对于联邦学习这种庞大的模型需要大量的通信成本，虽然可以只向client发送模型的一部分以更新相关参数，但这必须先了解client的私有数据才能决定。而另一方面，在元学习中，算法可以训练包含不同类别的任务。例如MAML可以通过对k类任务进行元训练来为K类分类器提供初始化，无论具体类别是什么。因此，在FML框架中，可以利用MAML对所有n个类别进行k类分类器初始化的元训练。也就是让一个k类分类器在n个类别的任务背景下进行初始化的元学习。这样FML的通信和计算成本都降低了。</p>
+<p><strong>Contributions</strong> 本文贡献主要专注于联邦学习设置方面的算法设计，为此本文提出了一个新的框架并做了大量的实验。贡献点主要有三：1. 提出FedMeta框架，结合meta和fed，将maml算法和meta-sgd集成到federated learnin中。2. 在LEAF数据集上进行试验，与FedAvg进行比较，结果表明Fedmeta减少开销，同时精度更高。3. 将FedMeta应用于推荐任务，其中每个client都有高度personalized的记录，通过实验证明，与独立或联邦学习方法系那个比，元学习算法可以实现更高准确性。</p>
+<h2 id="federated-meta-learning">Federated Meta-Learning</h2>
+<h3 id="the-meta-learning-approach">The Meta-Learning Approach</h3>
+<p>元学习的目的是meta-train一个算法（meta learner）A，能够快速的训练一个模型。也就是能够得到一个能够快速收敛的初始模型。算法<span class="math inline">\(A_{\varphi}\)</span>是参数化的模型，其参数在元训练过程中，通过一系列的tasks进行更新。 元训练过程中，一个task T包含了一系列的 support set和query set，每个set都有对应的标签和数据。算法（meta learner）A会在support set上对模型f进行训练，并且输出参数<span class="math inline">\(\theta_T\)</span>，这成为inner update。然后模型<span class="math inline">\(f_{\theta_T}\)</span>会在query set上进行评估，然后会计算test loss<span class="math inline">\(\mathcal{L}_{D_{Q}^{T}}\left(\theta_{T}\right)\)</span> 来反映算法A的训练能力。最后A通过最小化test loss来进行更新，这个步骤称为outer update。这里要注意的是query set和support set是disjoint的，以最大化A的泛化能力。元训练阶段中在每个episode会从一个meta training set中样一个batch的tasks。因此算法A的优化目标可以表示为：</p>
+<p><span class="math display">\[
+\min _{\varphi} \mathbb{E}_{T \sim \mathcal{T}}\left[\mathcal{L}_{D_{Q}^{T}}\left(\theta_{T}\right)\right]=\min _{\varphi} \mathbb{E}_{T \sim \mathcal{T}}\left[\mathcal{L}_{D_{Q}^{T}}\left(\mathcal{A}_{\varphi}\left(D_{S}^{T}\right)\right)\right]
+\]</span></p>
+<p>MAML是具有代表性的元学习算法。对于MAML的算法A就是用于产生模型的初始状态。具体地说，就是对于每个task T，算法使得<span class="math inline">\(\alpha = \theta\)</span>，使得算法的参数和模型f的参数相等。然后模型f的参数在support set上训练，根据损失函数进行更新：<span class="math inline">\(\mathcal{L}_{D_{S}^{T}}(\theta):=\frac{1}{\left|D_{S}^{T}\right|} \sum_{(x, y) \in D_{S}^{T}} \ell\left(f_{\theta}(x), y\right)\)</span>。最后把模型参数在query set上进行测试，然后计算测试的损失：<span class="math inline">\(\mathcal{L}_{D_{Q}^{T}}\left(\theta_{T}\right):=\frac{1}{\left|D_{Q}^{T}\right|} \sum_{\left(x^{\prime}, y^{\prime}\right) \in D_{Q}^{T}} \ell\left(f_{\theta_{T}}\left(x^{\prime}\right), y^{\prime}\right)\)</span></p>
+<p>公式1可以简写为：</p>
+<p><span class="math display">\[
+\min _{\theta} \mathbb{E}_{T \sim \mathcal{T}}\left[\mathcal{L}_{D_{Q}^{T}}\left(\theta-\alpha \nabla \mathcal{L}_{D_{S}^{T}}(\theta)\right)\right]
+\]</span></p>
+<p>基于MAML，Meta-SGD进一步学习初始参数和内循环学习率在同一时刻。测试损失可以看做是模型参数和学习率的函数，两者都可以在外循环中采用SGD算法求梯度来被更新。此外，学习率和模型参数是相同维度的向量，是的学习率在坐标方向上和模型参数向量相对应。</p>
+<p>因此优化条件可以重写为</p>
+<p><span class="math display">\[
+\min _{\theta, \alpha} \mathbb{E}_{T \sim \mathcal{T}}\left[\mathcal{L}_{D_{Q}^{T}}\left(\theta-\alpha \circ \nabla \mathcal{L}_{D_{S}^{T}}(\theta)\right)\right]
+\]</span></p>
+<h3 id="the-federated-meta-learning-framework">The Federated Meta-Learning Framework</h3>
+<p>FML的 目标是能够协作式的通过分布在各个clients的数据meta train一个算法。以MAML为例，就是希望那个利用所有clients的数据，来完成一个模型的初始化。MAML包括两个层次的优化过程：内循环利用初始化参数训练特定任务模型，外循环根据测试损失更新初始化参数。在联邦学习的环境中，每个client u会从服务器接收初始化参数 <span class="math inline">\(\theta\)</span>，然后根据设备上的support set数据进行模型的训练，并传输test loss到server。server主要维护初始化参数，并根据clients的test loss对其进行更新。</p>
+<p>在这个过程中传输的信息包括了：模型初始化的参数（从server 到clients）和test loss（从clients到server）。对于Meta-SGD算法，向量<span class="math inline">\(\alpha\)</span>也是传输的部分，用于内循环模型训练的学习率参数。</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/20200219111333.png" alt="20200219111333.png"><figcaption>20200219111333.png</figcaption>
+</figure>
+<p>算法1描述了采用MAML和MetaSGD的FedMeta的过程，其中communication round表示的是episode。算法在AlgorithmUpdate步骤中被维护。在更新的每轮，server会收集MAML或者metasgd在采样的clients上训练的得到的test loss。初始化参数<span class="math inline">\(\theta\)</span>在client的训练集训练后更新，然后使用更新后的参数在测试机上测试。然后在meta trian过程后将模型部署在client上。</p>
+<h2 id="experiments">Experiments</h2>
+<ol type="1">
+<li>在LEAF数据集上实验，证明了其收敛性块，准确性高。</li>
+<li>在实际环境下的推荐任务中进行实验，可以保证在较小的规模依然保持较强的适应力。</li>
+</ol>
+<h3 id="evaluation-scheme">Evaluation Scheme</h3>
+<p>所有实验中80%的clients作为训练clients，10%作为验证clients剩余的作为测试clients。每个clients的本地数据会分为support set和query set。同时本文改变每个client的p部分的数据作为support set来研究FedMeta如何有效适应数据量有限的新client。后面简称为psupport。</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/20200219114337.png" alt="20200219114337.png"><figcaption>20200219114337.png</figcaption>
+</figure>
+<p>作者做了FedAVG，FedAVG的meta版本以及两种FedMeta的实验。FedAVG的meta版本是利用测试clients的support set 来对从server接收到的初始化模型进行finetune，然后测试。而训练阶段，两者都采用训练clients上所有的数据。</p>
+<p>至于FML，测试了三种MAML，FOMAML，Meta-SGD，都是模型无关的方法，而且容易实现。</p>
+<h3 id="leaf-datasets">LEAF Datasets</h3>
+<p><strong>Accuracy and Convergence Comparsion</strong> 考虑到边际设备的运算能力的限制，每个client的local epoch设置为1。</p>
+<figure>
+<img src="http://cdn.ereebay.me/hexo/20200219125820.png" alt="20200219125820.png"><figcaption>20200219125820.png</figcaption>
+</figure>
+<p>如上图所示，FedMeta框架所有方法都更快更稳定的收敛了，并且得到了明显的提升。MAML和Meta-SGD的收敛速度很准确率在前两个数据集都达到了相似的收敛速度和准确度。在Sent140上meta-sgd更好一些。</p>
+<p>表格展示了四种方法数轮通信后的准确度。首先可以看出，FedAvg表现远远差于FedMeta，尤其是图像分类的任务。MAML和Meta-SGD的准确度最高，增加了3.23-14.84的准确度。同时也发现，fedavg（meta）在大多数情况比fedavg准确率更高。然而，有两个例外，就是当support fraction为20%的时候。出乎意料的是FedAvg（Meta）还有在精准度上轻微的下降。这可能是因为在对少量数据进行微调后，该模型和全局最优值存在过度偏差。其次，当我们增加support集的概率p，几乎在所有情况下FedAvg（Meta）和FedMeta的精度都会提高。但是FedAvg（meta）的增长率大于FedMeta。说明FedMeta泛化能力更强，更有效适应数据量有限的client。</p>
+<p><strong>Fairness Comparison</strong> 本文同时还比较了多次实验，利用平均最终的准确度分布，来研究FedAvg和FedMeta。从前面的图的最后一行，展示了不同方法的核密度估计。对于FEMNIST，MAML和Meta-SGD不仅导致较高的均值，而且方差更低。对于Shakespeare数据集，FedMeta方差虽然更大，但是均值也更大。对于Sent140，准确度的分布都差不多。然而可以看出，MAML和Meta-SGD有更多接近100%的clients。总之，对于图像分类任务，FedMeta的准确度分布更为稳定集中。</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>FedMeta框架，在准确性 收敛速度和通信成本都比原本的FedAvg要更好。</p>
+
+      
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------The end of this article&nbsp;<i class="fa fa-paw"></i>&nbsp;Thank you for your reading-------</div>
+    
+</div>
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+
+    
+
+    
+       
+    
+    
+
+    
+      <div>
+        
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Eree</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://ereebay.me/posts/35664/" title="Federated Meta-Learning with Fast Convergence and Efficient Communication">https://ereebay.me/posts/35664/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/28331/" rel="next" title="CS330 lecture 1&2 学习笔记【未完】">
+                <i class="fa fa-chevron-left"></i> CS330 lecture 1&2 学习笔记【未完】
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/26959/" rel="prev" title="Stagewise Knowledge Distillation">
+                Stagewise Knowledge Distillation <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200" alt="Eree">
+            
+              <p class="site-author-name" itemprop="name">Eree</p>
+              <p class="site-description motion-element" itemprop="description">This is Eree's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="GitHub &rarr; https://github.com/ereebay"><i class="fa fa-fw fa-github"></i>GitHub</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="bWFpbHRvOnhrLmphY2tzb25AaG90bWFpbC5jb20=" title="E-Mail &rarr; mailto:xk.jackson@hotmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9lcmVlX2JheQ==" title="Twitter &rarr; https://twitter.com/eree_bay"><i class="fa fa-fw fa-twitter"></i>Twitter</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9zdGVhbWNvbW11bml0eS5jb20vaWQvRXJlZUJheQ==" title="Steam &rarr; https://steamcommunity.com/id/EreeBay"><i class="fa fa-fw fa-steam"></i>Steam</span>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+                
+              
+              
+              
+              <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+             </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWN6cC5jb20=" title="https://hiczp.com">czp's blog</span>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWFyaWFzLmNvbQ==" title="https://hiarias.com">arias's blog</span>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#federated-meta-learning-with-fast-convergence-and-efficient-communication"><span class="nav-number">1.</span> <span class="nav-text">Federated Meta-Learning with Fast Convergence and Efficient Communication</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#federated-meta-learning"><span class="nav-number">1.3.</span> <span class="nav-text">Federated Meta-Learning</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-meta-learning-approach"><span class="nav-number">1.3.1.</span> <span class="nav-text">The Meta-Learning Approach</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-federated-meta-learning-framework"><span class="nav-number">1.3.2.</span> <span class="nav-text">The Federated Meta-Learning Framework</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#experiments"><span class="nav-number">1.4.</span> <span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluation-scheme"><span class="nav-number">1.4.1.</span> <span class="nav-text">Evaluation Scheme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#leaf-datasets"><span class="nav-number">1.4.2.</span> <span class="nav-text">LEAF Datasets</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">1.5.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Eree</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">47k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">42 分钟</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Pisces</span> v6.5.0</div>
+
+
+
+
+
+
+
+
+  <span class="exturl" data-url="aHR0cDovL3d3dy5taWl0YmVpYW4uZ292LmNu">浙ICP备15027223号</span>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'e8f2fc8efe4d0c2fb068',
+          clientSecret: 'e93849838f07bf7fea34ed1ae217fff4d70c07a8',
+          repo: 'blog',
+          owner: 'Ereebay',
+          admin: ['Ereebay'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=6.5.0"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=6.5.0"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=6.5.0"></script>
+
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+
+</body>
+</html>

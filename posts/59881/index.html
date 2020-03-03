@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Generative Adversarial Network GAN的概述 GAN的思想就是：这是一个两人的零和博弈游戏，博弈双方的利益之和是一个常数，比如两个人掰手腕，假设总的空间是一定的，你的力气大一点，那你就得到的空间多一点，相应的我的空间就少一点，相反我力气大我就得到的多一点，但有一点是确定的就是，我两的总空间是一定的，这就是二人博弈，但是呢总利益是一定的。">
+<meta name="keywords" content="GAN,note,deep learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成对抗网络（GAN）相关笔记">
+<meta property="og:url" content="https://ereebay.me/posts/59881/index.html">
+<meta property="og:site_name" content="Eree&#39;s Blog">
+<meta property="og:description" content="Generative Adversarial Network GAN的概述 GAN的思想就是：这是一个两人的零和博弈游戏，博弈双方的利益之和是一个常数，比如两个人掰手腕，假设总的空间是一定的，你的力气大一点，那你就得到的空间多一点，相应的我的空间就少一点，相反我力气大我就得到的多一点，但有一点是确定的就是，我两的总空间是一定的，这就是二人博弈，但是呢总利益是一定的。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-03T12:28:01.339Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="生成对抗网络（GAN）相关笔记">
+<meta name="twitter:description" content="Generative Adversarial Network GAN的概述 GAN的思想就是：这是一个两人的零和博弈游戏，博弈双方的利益之和是一个常数，比如两个人掰手腕，假设总的空间是一定的，你的力气大一点，那你就得到的空间多一点，相应的我的空间就少一点，相反我力气大我就得到的多一点，但有一点是确定的就是，我两的总空间是一定的，这就是二人博弈，但是呢总利益是一定的。">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Eree's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://ereebay.me/posts/59881/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>生成对抗网络（GAN）相关笔记 | Eree's Blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c609ce8cb0*******f*********eae0c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eree's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-english">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/en.html" rel="section"><i class="menu-item-icon fa fa-fw fa-flag"></i> <br>English</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></span>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ereebay.me/posts/59881/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Eree">
+      <meta itemprop="description" content="This is Eree's blog">
+      <meta itemprop="image" content="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eree's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">生成对抗网络（GAN）相关笔记
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-01 17:00:22" itemprop="dateCreated datePublished" datetime="2019-03-01T17:00:22+08:00">2019-03-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                <time title="修改时间：2019-03-03 20:28:01" itemprop="dateModified" datetime="2019-03-03T20:28:01+08:00">2019-03-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/notes/" itemprop="url" rel="index"><span itemprop="name">notes</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                <span title="本文字数">10k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                <span title="阅读时长">9 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+      <div>
+           <ul class="post-copyright">
+  <li class="post-copyright-link">
+    <strong><i class="fa fa-globe"></i> English：</strong>
+    <span id="url" style="display:none">https://eree.dev</span> 
+    <span id="path" style="display:none">https://ereebay.me/posts/59881/</span> 
+    <span id="info" style="display:none">英文版本</span> 
+    <span id="goto"></span> 
+  </li>
+</ul>
+
+
+<script language="javascript">
+    var url = document.getElementById("url").innerHTML;
+    var path = document.getElementById("path").innerHTML;
+    var info = document.getElementById("info").innerHTML;
+    path=GetUrlRelativePath(path);
+    if(info.length==0){
+      infos= url+path;
+    }
+    else{
+      infos=info;
+    }
+    var str = "<a href='"+url+path+"'>"+infos+"</a>"
+    console.log(str);
+    document.getElementById("goto").innerHTML=str;
+
+　　function GetUrlRelativePath()
+　　{
+　　　　var url = document.location.toString();
+　　　　var arrUrl = url.split("//");
+
+　　　　var start = arrUrl[1].indexOf("/");
+　　　　var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+　　　　if(relUrl.indexOf("?") != -1){
+　　　　　　relUrl = relUrl.split("?")[0];
+　　　　}
+　　　　return relUrl;
+　　}
+</script>
+
+           <br>
+      </div>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="generative-adversarial-network">Generative Adversarial Network</h1>
+<h2 id="gan的概述">GAN的概述</h2>
+<p>GAN的思想就是：这是一个两人的零和博弈游戏，博弈双方的利益之和是一个常数，比如两个人掰手腕，假设总的空间是一定的，你的力气大一点，那你就得到的空间多一点，相应的我的空间就少一点，相反我力气大我就得到的多一点，但有一点是确定的就是，我两的总空间是一定的，这就是二人博弈，但是呢总利益是一定的。</p>
+<a id="more"></a>
+<p>用一个形象的例子解释就是：GAN就好比是一个大的网络，在这个网络中有两个小的网络，一个是生成网络，可以当做是制作假钞的人， 而另一个是鉴别网络，也就是鉴别假钞的人。对于生成网络的目标就是去欺骗鉴别器，而鉴别器是为了不被生成器所欺骗。模型经过交替的优化训练，都能得到提升，理论证明，最后生成模型最好的效果是能够让鉴别器真假难分，也就是真假概率五五开。</p>
+<!-- ![](../res/img/img1.jpg) -->
+<p>上图是生成对抗网络的结构示意图，鉴别器接受真实样本和生成器生成的虚假样本，然后判断出真假结果。生成器接受噪声，生成出虚假样本。</p>
+<h2 id="gan的原理">GAN的原理</h2>
+<p>下式是GAN的目标函数公式：</p>
+<p><span class="math display">\[
+\min _ { G } \max _ { D } V ( D , G ) = \mathbb { E } _ { \boldsymbol { x } \sim p _ { \mathrm { data } } ( \boldsymbol { x } ) } [ \log D ( \boldsymbol { x } ) ] + \mathbb { E } _ { \boldsymbol { z } \sim p _ { \boldsymbol { z } } ( z ) } [ \log ( 1 - D ( G ( \boldsymbol { z } ) ) ) ]
+\]</span></p>
+<p>从目标函数可以看出，整个代价函数是最小化生成器，最大化鉴别器，那么在处理这个最优化问题的时候，我们可以先固定住G，然后先最大化D，然后再最小化G得到最优解。其中，在给定G的时候，最大化 V(D,G) 评估了P_G和P_data之间的差异或距离。</p>
+<p>首先，在固定G之后，最优化D的情况就可以表述为：</p>
+<p><span class="math display">\[
+D _ { G } ^ { * } = \operatorname { argmax } _ { D } V ( G , D )
+\]</span></p>
+<p>最优化G的问题就可以表述为：</p>
+<p><span class="math display">\[
+G ^ { * } = \operatorname { argmin } _ { G } V \left( G , D _ { G } ^ { * } \right)
+\]</span></p>
+<h2 id="理论推导">理论推导</h2>
+<p>在论文原文推导过程中采用的是JS散度来描述两个分布的相似程度，而JS散度其实使用KL散度构建出来的，因此，在进行完整推导之前，先介绍一些理论基础，在进行推导最优鉴别器和最优生成器所需要的条件，最后利用推导的结果重述训练过程。</p>
+<h3 id="kl散度">KL散度</h3>
+<p>对与同一个随机变量 <span class="math inline">\(x\)</span> 有两个单独的概率分布 <span class="math inline">\(P(x)\)</span> 和 <span class="math inline">\(Q(x)\)</span> ，用KL散度可以衡量这两个分布的差异（附录会有证明为何KL散度能说明两个分布的差异）：</p>
+<p><span class="math display">\[
+D _ { \mathrm { KL } } ( P \| Q ) = \mathbb { E } _ { \mathrm { x } \sim P } \left[ \log \frac { P ( x ) } { Q ( x ) } \right] = \mathbb { E } _ { \mathrm { x } \sim P } [ \log P ( x ) - \log Q ( x ) ]
+\]</span></p>
+<p>KL散度的性质：</p>
+<ol type="1">
+<li>非负性（这个性质后面推导会用到），同时当且仅当P和Q相同分布时候，KL散度才会为0。因为这个非负性，所以它可以经常用来衡量两个分布之间的差异。（附录会证明其非负性）</li>
+<li>非对称性， 虽然可以衡量分布的差异，但是这个差异的距离不是对称的，所以KL散度在P对于Q下的和Q对于P下两种情况是不同的。</li>
+</ol>
+<h3 id="论文推导过程中的问题">论文推导过程中的问题</h3>
+<p>在原论文中，有一个思想和许多方法都不同，就是生成器G不需要满足可逆条件，在实践中，G确实就是不可逆的。但是在证明的过程中，大家都错误的使用了积分换元公式，而这个积分换元是只有当G满足可逆条件时候才能使用。所以证明应该是基于下面这个等式的成立性：</p>
+<p><span class="math display">\[
+E _ { z \sim p _ { x } ( z ) } \log ( 1 - D ( G ( z ) ) ) = E _ { x \sim p _ { c } ( x ) } \log ( 1 - D ( x ) )
+\]</span></p>
+<p>该等式来源于测度论重的Radon-Nikodym定理，它在原论文中的命题1中被展示，并表述为下列等式：</p>
+<p><span class="math display">\[
+\begin{array} { c } { \int _ { x } p _ { d a t a } ( x ) \log D ( x ) \mathrm { d } x + \int _ { z } p ( z ) \log ( 1 - D ( G ( z ) ) ) \mathrm { d } z } \\ { = \int _ { x } p _ { d a t a } ( x ) \log D ( x ) + p _ { G } ( x ) \log ( 1 - D ( x ) ) \mathrm { d } x } \end{array}
+\]</span></p>
+<p>这个公式中使用了积分换元公式，但是使用换元就必须计算G的逆，而G的逆没有被假定存在。而且在神经网络中的实践中，它也不存在。不过这方法在ML中太常见了，因此就忽略了。</p>
+<h3 id="最优判别器">最优判别器</h3>
+<p>在极小极大博弈中，首先固定生成器G，最大化价值函数，从而得出最优判别起D。其中，最大化的价值函数评估了生成器生成的数据分布和数据集分布的差异（后面会证明）。</p>
+<p>在原论文中的价值函数可以将其数学期望展开成为积分的形式：</p>
+<p><span class="math display">\[
+V ( G , D ) = \int _ { x } p _ { \mathrm { data } } ( \boldsymbol { x } ) \log ( D ( \boldsymbol { x } ) ) + p _ { g } ( \boldsymbol { x } ) \log ( 1 - D ( \boldsymbol { x } ) ) d x
+\]</span></p>
+<p>通过求积分的最大值可以转化为求被积函数的最大值。通过求被积函数的最大值可以求的最优判别器D，因此可以把不涉及到鉴别器的项都看作是常数项，令鉴别器D(x)为y，则被积函数可以表示为：</p>
+<p><span class="math display">\[
+f ( y ) = a \log y + b \log ( 1 - y )
+\]</span></p>
+<p>为了寻找最优的极值点，如果<span class="math inline">\(a + b \neq 0\)</span>，可以用来进行下一阶导求解：</p>
+<p><span class="math display">\[
+f ^ { \prime } ( y ) = 0 \Rightarrow \frac { a } { y } - \frac { b } { 1 - y } = 0 \Rightarrow y = \frac { a } { a + b }
+\]</span></p>
+<p>通过在其驻点进行二阶导求解可得：</p>
+<p><span class="math display">\[
+f ^ { \prime \prime } \left( \frac { a } { a + b } \right) = - \frac { a } { \left( \frac { a } { a + b } \right) ^ { 2 } } - \frac { b } { 1 - \left( \frac { a } { a + b } \right) ^ { 2 } } &lt; 0
+\]</span></p>
+<p>其中<span class="math inline">\(a , b \in ( 0,1 )\)</span>。因为一阶导等于0，二阶导小于0，因此<span class="math inline">\(\frac { a } { a + b }\)</span>时就是极大值。</p>
+<p>最后就可以将价值函数写为：</p>
+<p><span class="math display">\[
+\begin{aligned} V ( G , D ) = &amp; \int _ { x } p _ { d a t a } ( x ) \log D ( x ) + p _ { G } ( x ) \log ( 1 - D ( x ) ) \mathrm { d } x \\ &amp; \leq \int \max _ { y } \max _ { y } p _ { d a t a } ( x ) \log y + p _ { G } ( x ) \log ( 1 - y ) \mathrm { d } x \end{aligned}
+\]</span></p>
+<p>令D(x)=P_data/(P_data+p_G)，就可以取得极大值，因为在丁一宇内f(y)拥有唯一的极大值，也就是说最优D是唯一的，并且没有其他的D能实现极大值。</p>
+<p>事实上，最优D在实践中是无法被计算，但是在数学上很重要。此外，我们不知道先验的Pdata，所以我们不能直接在训练中使用它。另一方面来说，最优D的存在证明了最优G，而且我们只要趋向于最优的D就可以了。</p>
+<h3 id="最优生成器">最优生成器</h3>
+<p>GAN的训练过程就是为了让P_G=P_data，那么最优D就可以表示为：</p>
+<p><span class="math display">\[
+D _ { G } ^ { * } = \frac { p _ { \text {data} } } { p _ { \text {data} } + p _ { G } } = \frac { 1 } { 2 }
+\]</span></p>
+<p>也就是最优的生成器会使得鉴别器无法辨别P_data和P_G。基于这个观点，论文作者证明了G就是极大极小博弈的解。</p>
+<p>定理：当且仅当P_G=P_data的时候，C(G)=maxV(G,D)的全局最小点可以达到。</p>
+<p>定理中说该结论是当且仅当是成立，因此从两个方向证明。首先反向逼近，证明C(G)的取值，然后从正向证明。</p>
+<p>假设P_G=P_data(反向预先知道结果进行推到)，可以反向推出：</p>
+<p><span class="math display">\[
+V \left( G , D _ { G } ^ { * } \right) = \int _ { x } p _ { d a t a } ( x ) \log \frac { 1 } { 2 } + p _ { G } ( x ) \log \left( 1 - \frac { 1 } { 2 } \right) \mathrm { d } x
+\]</span></p>
+<p><span class="math display">\[
+V \left( G , D _ { G } ^ { * } \right) = - \log 2 \int _ { x } p _ { G } ( x ) \mathrm { d } x - \log 2 \int _ { x } p _ { d a t a } ( x ) \mathrm { d } x = - 2 \log 2 = - \log 4
+\]</span></p>
+<p>那么-log4就是最小值的候选，因为只有在P_G=P_data的时候才出现。现在就要从正向证明这个值常常是最小值，也就是同时满足当且仅当的条件。</p>
+<p>现在放弃P_G=P_data的条件，选取任何的G，改写公式为：</p>
+<p><span class="math display">\[
+C ( G ) = \int _ { x } p _ { d a t a } ( x ) \log \left( \frac { p _ { d a t a } ( x ) } { p _ { G } ( x ) + p _ { d a t a } ( x ) } \right) + p _ { G } ( x ) \log \left( \frac { p _ { G } ( x ) } { p _ { G } ( x ) + p _ { d a t a } ( x ) } \right) \mathrm { d } x
+\]</span></p>
+<p>下面会应用一个trick，给方程增加一个0，不改变方程的值，但是可以构建出一个log2，因为我们知道-log4是全局最小值的候选。</p>
+<p><span class="math display">\[
+\begin{aligned} C ( G ) &amp; = \int _ { x } ( \log 2 - \log 2 ) p _ { d a t a } ( x ) + p _ { d a t a } ( x ) \log \left( \frac { p _ { d a t a } ( x ) } { p _ { G } ( x ) + p _ { d a t a } ( x ) } \right) \\ &amp; + ( \log 2 - \log 2 ) p _ { G } ( x ) + p _ { G } ( x ) \log \left( \frac { p _ { G } ( x ) } { p _ { G } ( x ) + p _ { d a t a } ( x ) } \right) \mathrm { d } x \end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+\begin{array} { c } { C ( G ) = - \log 2 \int _ { x } p _ { G } ( x ) + p _ { d a t a } ( x ) d x } \\ { + \int _ { x } p _ { d a t a } ( x ) \left( \log 2 + \log \left( \frac { p _ { d a t a } ( x ) } { p _ { G } ( x ) + p _ { d a t a } ( x ) } \right) \right) } \\ { + p _ { G } ( x ) \left( \log 2 + \log \left( \frac { p _ { G } ( x ) } { p _ { G } ( x ) + p _ { d a t a } ( x ) } \right) \right) \mathrm { d } x } \end{array}
+\]</span></p>
+<p>最后化简可以得到：</p>
+<p><span class="math display">\[
+\begin{aligned} C ( G ) = &amp; - \log 4 + \int _ { x } p _ { d a t a } ( x ) \log \left( \frac { p _ { d a t a } ( x ) } { \left( p _ { G } ( x ) + p _ { \text {data} } ( x ) \right) / 2 } \right) \mathrm { d } x \\ &amp; + \int _ { x } p _ { G } ( x ) \log \left( \frac { p _ { G } ( x ) } { \left( p _ { G } ( x ) + p _ { d a t a } ( x ) \right) / 2 } \right) \mathrm { d } x \end{aligned}
+\]</span></p>
+<p>如果阅读了前面kl散度的部分，就可以发现他可以化简为kl散度的形式：</p>
+<p><span class="math display">\[
+C ( G ) = - \log 4 + K L \left( p _ { d a t a } | \frac { p _ { d a t a } + p _ { G } } { 2 } \right) + K L \left( p _ { G } | \frac { p _ { d a t a } + p _ { G } } { 2 } \right)
+\]</span></p>
+<p>由于KL散度是非负的，所以-log4就是全局最小值。</p>
+<p>接下来只需要证明只有这一个G能达到这个值，这样P_G=P_data就成为了唯一解，整个证明就完成了。</p>
+<p>从前文可以KL散度是非对称，只能衡量分布a对于分布b的相似度，但是加上了后面那项以后，他们的和就是对称得了，这个时候，这两项的和就能用JS散度来表示：</p>
+<p><span class="math display">\[
+\operatorname { JSD } ( P \| Q ) = \frac { 1 } { 2 } D ( P \| M ) + \frac { 1 } { 2 } D ( Q \| M )
+\]</span></p>
+<p><span class="math display">\[
+M = \frac { 1 } { 2 } ( P + Q )
+\]</span></p>
+<p>假设存在两个分布P和Q，且这两个分布的平均分布M=(P+Q)/2，那么这两个分布之间的JS散度就是P和M之间的KL散度加上Q和M之间的KL散度除以2。</p>
+<p>因此JS的散度取值范围是0到log2。当两个分布完全不存在交集则为log2， 当完全一样的时候则是最小值0.</p>
+<p>因此C(G)可以改写为：</p>
+<p><span class="math display">\[
+C ( G ) = - \log 4 + 2 \cdot J S D \left( p _ { \text { data } } | p _ { G } \right)
+\]</span></p>
+<p>也就证明了，当P_G=P_data时，JSD为0。综上，当生成的分布当且仅当等于真实数据分布的时候，我们取得了最优的生成器。</p>
+<h3 id="收敛性">收敛性</h3>
+<p>关于训练过程中能否收敛到最优的生成器，原论文有额外的证明表示，当具有足够的训练数据，d和g有足够的性能时候，是可以收敛到最优G，因为这块内容不是特别重要，证明我会放在附录（主要我也看的一知半解）</p>
+<h3 id="训练过程">训练过程</h3>
+<p>1.参数优化过程</p>
+<p>若我们要寻找最优的生成器，在确定一个鉴别器D以后，我们可以把原本的价值函数看作是训练生成器的损失函数L(G)。有了损失函数，就可以通过SGD，Adam等优化算法更新我们的生成器，梯度下降的优化过程如下：</p>
+<p><span class="math display">\[
+\theta _ { G } \leftarrow \theta _ { G } - \eta \partial L ( G ) / \partial \theta _ { G }
+\]</span></p>
+<p>现在给定一个初始的G_0，需要找到令V(G_0,D)最大的D_0*，因此鉴别器的更新过程就是损失函数：-V（G，D）的过程。并且有前面的推导可知，V(G,D)实际上与分布P_data(x)和P_G(x)之间的JS散度只相差了一个常数项，因此这样的循环对抗过程能表述为：</p>
+<ul>
+<li>给定G_0，最大化V(G_0,D)以求得D_0*，即max[JSD(P_data(x)||P_G0(x))];</li>
+<li>固定D_0*，计算<span class="math inline">\(\mathrm { \theta } _ { - } \mathrm { G } 1 \leftarrow \theta _ { - } \mathrm { G0 } - \mathrm { \eta } \left( \partial \mathrm { V } \left( \mathrm { G } , \mathrm { D } _ { - } \mathrm { 0 } ^ { * } \right) / \partial \theta _ { - } \mathrm { G } \right)\)</span>，求得更新后的G_1;</li>
+<li>固定G_1，最大化V(G_1,D_0<em>)以求得D_1</em>，即max[JSD(P_data(x)||P_G1(x)];</li>
+<li>固定D_1*，计算<span class="math inline">\(\theta _ { - } \mathrm { G } 2 \leftarrow \theta _ { - } \mathrm { G } 1 - \eta \left( \partial \mathrm { V } \left( G , D _ { - } \mathrm { 0 } ^ { * } \right) / \partial \theta _ { - } \mathrm { G } \right)\)</span>以求得更新后的G_2;</li>
+</ul>
+<p>如此循环</p>
+<p>2.实际训练过程</p>
+<p>根据前面价值函数V(G,D)的定义，我们需要求两个数学期望，即E[log(D(x))]和E[log(1-D(G(z)))]，其中x服从真实数据分布，z服从初始化分布。但在实践中，我们是没用办法利用积分求这两个数学期望，所以一般只能通过从无穷的真实数据和无穷的生成器中采样来逼近数学期望。</p>
+<p>假设现在给定生成器G，并希望计算maxV(G,D)来求鉴别器D，那么首先我们需要从P_data(x)中采样m个样本，从生成器P_G(x)采样m哥样本。因此最大化价值函数可以用下面表达式代替：</p>
+<p><span class="math display">\[
+\text { Maximize } \tilde { V } = \frac { 1 } { m } \sum _ { i = 1 } ^ { m } \log D \left( x ^ { i } \right) + \frac { 1 } { m } \sum _ { i = 1 } ^ { m } \log \left( 1 - D \left( \tilde { x } ^ { i } \right) \right)
+\]</span></p>
+<p>现在我们将从P_data(x)中抽取的样本作为证样本，从P_G(x)抽取的样本作为负样本，同时逼近负V(G,D)的函数作为损失函数，因此就可以将其表述为一个标准的二分类器的训练过程：</p>
+<p><span class="math display">\[
+\text { Minimize } L = - \frac { 1 } { m } \sum _ { i = 1 } ^ { m } \log D \left( x ^ { i } \right) - \frac { 1 } { m } \sum _ { i = 1 } ^ { m } \log \left( 1 - D \left( \tilde { x } ^ { i } \right) \right)
+\]</span></p>
+<p>在实践中，我们必须使用迭代和数值计算的方法来实现极大极小化的博弈过程。在训练的内部循环中完整优化D在计算上是不允许的，而且有限的数据集会导致过拟合。因此我们可以在k个优化D步骤和一个优化G的步骤交替进行。只要慢慢更新G，D就会一直处于最优解的附近。</p>
+<p>综上，在整个训练过程中，对于每一次迭代：</p>
+<ul>
+<li>从真实数据分布P_data中抽取m个样本</li>
+<li>从先验分布P_prior(z)抽取m个噪声样本</li>
+<li>将噪声样本输入到生成器G中生成数据<span class="math inline">\(\left\{ \tilde { x } ^ { 1 } , \tilde { x } ^ { 2 } , \ldots , \tilde { x } ^ { m } \right\} , \tilde { x } ^ { i } = G \left( z ^ { i } \right)\)</span>，通过最大化V的近似而更新鉴别器参数<span class="math inline">\(\theta _ { - } d\)</span>，鉴别器参数的更新迭代公式为<span class="math inline">\(\theta _ { d } \leftarrow \theta _ { d } + \eta \nabla \tilde { V } \left( \theta _ { d } \right)\)</span></li>
+</ul>
+<p>以上是学习鉴别器D的过程。因为学习的过程是计算JS散度的过程，并且会重复k次，因为我们希望能够最大化价值函数。</p>
+<ul>
+<li>从先验分布P_prior(z)中抽取另外m个噪声样本</li>
+<li>通过极小化V，也就是<span class="math inline">\(\tilde { V } = \frac { 1 } { m } \sum _ { i = 1 } ^ { m } \log \left( 1 - D \left( G \left( z ^ { i } \right) \right) \right)\)</span>，且生成器参数的更新迭代式为<span class="math inline">\(\theta _ { g } \leftarrow \theta _ { g } - \eta \nabla \tilde { V } \left( \theta _ { g } \right)\)</span></li>
+</ul>
+<p>以上是生成器参数的学习过程，这个过程只会在一次迭代中出现一次，因此能避免更新太多使得js散度上升。</p>
+<p>以上便是GAN的完整推导过程和论证。</p>
+<h2 id="gan训练的几个问题">GAN训练的几个问题</h2>
+<h3 id="训练不稳定">训练不稳定</h3>
+<p>原始的GAN训练非常困难。主要体现在训练过程中可能并不收训练出得生成器根本不能产生有意义的内容等方面。另一方面，虽然说我们的优化目标函数是js散度，他应该能体现处两个分布的距离。并且这个距离一开始最好比较大，最后随着训练G过程的深入，这个距离应该慢慢变小才比较好。</p>
+<p>在实际过程中，鉴别器的损失函数非常容易变成0，而且在后面的过程中也一直保持0。js散度是用来衡量两个分布之间的距离，但实际上有两种情况会导致js散度判定两个分布距离是无穷大，从而使得lossfunction永远是0。</p>
+<p>情况1: 鉴别器D过强，导致了过拟合。</p>
+<p>解决方法：尝试使用正则化，或者减少模型参数</p>
+<p>情况2: 数据本身的特性。生成器产生的低维流型确实不容易产生重叠。</p>
+<p>解决方法：一种是给数据添加噪声，让生成器和真实数据分布更容易重叠 还有一种方法是下次要将的GAN</p>
+<h3 id="模式崩溃-mode-collapse">模式崩溃 mode collapse</h3>
+<p>所有的输出都一样！这个现象被称为Mode Collapse。这个现象产生的原因可能是由于真实数据在空间中很多地方都有一个较大的概率值，但是我们的生成模型没有直接学习到真实分布的特性。为了保证最小化损失，它会宁可永远输出一样但是肯定正确的输出，也不愿意尝试其他不同但可能错误的输出。也就是说，我们的生成器有时可能无法兼顾数据分布的所有内部模式，只会保守地挑选出一个肯定正确的模式。</p>
+<h2 id="总结">总结</h2>
+<ul>
+<li>GAN结合了生成模型和鉴别模型，消除了生成模型的损失函数难以定义的问题</li>
+<li>基于概率分布来计算，不受生成维度的限制</li>
+<li>可以用来进行半监督学习</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------The end of this article&nbsp;<i class="fa fa-paw"></i>&nbsp;Thank you for your reading-------</div>
+    
+</div>
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+
+    
+
+    
+       
+    
+    
+
+    
+      <div>
+        
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Eree</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="https://ereebay.me/posts/59881/" title="生成对抗网络（GAN）相关笔记">https://ereebay.me/posts/59881/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</span> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GAN/" rel="tag"><i class="fa fa-tag"></i> GAN</a>
+          
+            <a href="/tags/note/" rel="tag"><i class="fa fa-tag"></i> note</a>
+          
+            <a href="/tags/deep-learning/" rel="tag"><i class="fa fa-tag"></i> deep learning</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/55756/" rel="prev" title="One-shot Learning with Memory-Augmented Neural Networks 论文笔记 【未完】">
+                One-shot Learning with Memory-Augmented Neural Networks 论文笔记 【未完】 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://en.gravatar.com/userimage/100798883/b4527e6321a1f75cf9270f997de707ed.jpg?size=200" alt="Eree">
+            
+              <p class="site-author-name" itemprop="name">Eree</p>
+              <p class="site-description motion-element" itemprop="description">This is Eree's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2VyZWViYXk=" title="GitHub &rarr; https://github.com/ereebay"><i class="fa fa-fw fa-github"></i>GitHub</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="bWFpbHRvOnhrLmphY2tzb25AaG90bWFpbC5jb20=" title="E-Mail &rarr; mailto:xk.jackson@hotmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9lcmVlX2JheQ==" title="Twitter &rarr; https://twitter.com/eree_bay"><i class="fa fa-fw fa-twitter"></i>Twitter</span>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <span class="exturl" data-url="aHR0cHM6Ly9zdGVhbWNvbW11bml0eS5jb20vaWQvRXJlZUJheQ==" title="Steam &rarr; https://steamcommunity.com/id/EreeBay"><i class="fa fa-fw fa-steam"></i>Steam</span>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+                
+              
+              
+              
+              <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+             </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWN6cC5jb20=" title="https://hiczp.com">czp's blog</span>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <span class="exturl" data-url="aHR0cHM6Ly9oaWFyaWFzLmNvbQ==" title="https://hiarias.com">arias's blog</span>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#generative-adversarial-network"><span class="nav-number">1.</span> <span class="nav-text">Generative Adversarial Network</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gan的概述"><span class="nav-number">1.1.</span> <span class="nav-text">GAN的概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gan的原理"><span class="nav-number">1.2.</span> <span class="nav-text">GAN的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理论推导"><span class="nav-number">1.3.</span> <span class="nav-text">理论推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#kl散度"><span class="nav-number">1.3.1.</span> <span class="nav-text">KL散度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#论文推导过程中的问题"><span class="nav-number">1.3.2.</span> <span class="nav-text">论文推导过程中的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最优判别器"><span class="nav-number">1.3.3.</span> <span class="nav-text">最优判别器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最优生成器"><span class="nav-number">1.3.4.</span> <span class="nav-text">最优生成器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#收敛性"><span class="nav-number">1.3.5.</span> <span class="nav-text">收敛性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练过程"><span class="nav-number">1.3.6.</span> <span class="nav-text">训练过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gan训练的几个问题"><span class="nav-number">1.4.</span> <span class="nav-text">GAN训练的几个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#训练不稳定"><span class="nav-number">1.4.1.</span> <span class="nav-text">训练不稳定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模式崩溃-mode-collapse"><span class="nav-number">1.4.2.</span> <span class="nav-text">模式崩溃 mode collapse</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Eree</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">47k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">42 分钟</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0Lm9yZw==">NexT.Pisces</span> v6.5.0</div>
+
+
+
+
+
+
+
+
+  <span class="exturl" data-url="aHR0cDovL3d3dy5taWl0YmVpYW4uZ292LmNu">浙ICP备15027223号</span>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: 'e8f2fc8efe4d0c2fb068',
+          clientSecret: 'e93849838f07bf7fea34ed1ae217fff4d70c07a8',
+          repo: 'blog',
+          owner: 'Ereebay',
+          admin: ['Ereebay'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=6.5.0"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=6.5.0"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=6.5.0"></script>
+
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+
+</body>
+</html>
